@@ -9,9 +9,10 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"github.com/mmitton/asn1-ber"
 	"net"
 	"sync"
+
+	"github.com/mmitton/asn1-ber"
 )
 
 // LDAP Connection
@@ -29,7 +30,7 @@ type Conn struct {
 
 // Dial connects to the given address on the given network using net.Dial
 // and then returns a new Conn for the connection.
-func Dial(network, addr string) (*Conn, *Error) {
+func Dial(network, addr string) (*Conn, error) {
 	c, err := net.Dial(network, addr)
 	if err != nil {
 		return nil, NewError(ErrorNetwork, err)
@@ -41,7 +42,7 @@ func Dial(network, addr string) (*Conn, *Error) {
 
 // Dial connects to the given address on the given network using net.Dial
 // and then sets up SSL connection and returns a new Conn for the connection.
-func DialSSL(network, addr string) (*Conn, *Error) {
+func DialSSL(network, addr string) (*Conn, error) {
 	c, err := tls.Dial(network, addr, nil)
 	if err != nil {
 		return nil, NewError(ErrorNetwork, err)
@@ -55,7 +56,7 @@ func DialSSL(network, addr string) (*Conn, *Error) {
 
 // Dial connects to the given address on the given network using net.Dial
 // and then starts a TLS session and returns a new Conn for the connection.
-func DialTLS(network, addr string) (*Conn, *Error) {
+func DialTLS(network, addr string) (*Conn, error) {
 	c, err := net.Dial(network, addr)
 	if err != nil {
 		return nil, NewError(ErrorNetwork, err)
@@ -89,7 +90,7 @@ func (l *Conn) start() {
 }
 
 // Close closes the connection.
-func (l *Conn) Close() *Error {
+func (l *Conn) Close() error {
 	l.closeLock.Lock()
 	defer l.closeLock.Unlock()
 
@@ -117,7 +118,7 @@ func (l *Conn) nextMessageID() (messageID uint64) {
 }
 
 // StartTLS sends the command to start a TLS session and then creates a new TLS Client
-func (l *Conn) startTLS() *Error {
+func (l *Conn) startTLS() error {
 	messageID := l.nextMessageID()
 
 	if l.isSSL {
@@ -173,7 +174,7 @@ type messagePacket struct {
 	Channel   chan *ber.Packet
 }
 
-func (l *Conn) sendMessage(p *ber.Packet) (out chan *ber.Packet, err *Error) {
+func (l *Conn) sendMessage(p *ber.Packet) (out chan *ber.Packet, err error) {
 	message_id := p.Children[0].Value.(uint64)
 	out = make(chan *ber.Packet)
 
