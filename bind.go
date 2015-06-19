@@ -7,10 +7,11 @@ package ldap
 
 import (
 	"errors"
+
 	"github.com/mmitton/asn1-ber"
 )
 
-func (l *Conn) Bind(username, password string) *Error {
+func (l *Conn) Bind(username, password string) error {
 	messageID := l.nextMessageID()
 
 	packet := ber.Encode(ber.ClassUniversal, ber.TypeConstructed, ber.TagSequence, nil, "LDAP Request")

@@ -8,6 +8,7 @@ package ldap
 import (
 	"errors"
 	"fmt"
+
 	"github.com/mmitton/asn1-ber"
 )
 
@@ -104,7 +105,7 @@ func NewSearchRequest(
 	}
 }
 
-func (l *Conn) SearchWithPaging(SearchRequest *SearchRequest, PagingSize uint32) (*SearchResult, *Error) {
+func (l *Conn) SearchWithPaging(SearchRequest *SearchRequest, PagingSize uint32) (*SearchResult, error) {
 	if SearchRequest.Controls == nil {
 		SearchRequest.Controls = make([]Control, 0)
 	}
@@ -168,7 +169,7 @@ func (l *Conn) SearchWithPaging(SearchRequest *SearchRequest, PagingSize uint32)
 	return SearchResult, nil
 }
 
-func (l *Conn) Search(SearchRequest *SearchRequest) (*SearchResult, *Error) {
+func (l *Conn) Search(SearchRequest *SearchRequest) (*SearchResult, error) {
 	messageID := l.nextMessageID()
 
 	packet := ber.Encode(ber.ClassUniversal, ber.TypeConstructed, ber.TagSequence, nil, "LDAP Request")
