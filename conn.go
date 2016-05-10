@@ -301,6 +301,9 @@ func (l *Conn) reader() {
 
 func (l *Conn) sendProcessMessage(message *messagePacket) {
 	if l.chanProcessMessage != nil {
-		go func() { l.chanProcessMessage <- message }()
+		go func() {
+			defer func() { recover()}()
+			l.chanProcessMessage <- message
+		}()
 	}
 }
