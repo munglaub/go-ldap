@@ -255,7 +255,6 @@ func (l *Conn) processMessages() {
 }
 
 func (l *Conn) closeAllChannels() {
-	fmt.Printf("closeAllChannels\n")
 	for MessageID, Channel := range l.chanResults {
 		if l.Debug {
 			fmt.Printf("Closing channel for MessageID %d\n", MessageID)
