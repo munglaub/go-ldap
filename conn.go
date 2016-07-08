@@ -275,6 +275,11 @@ func (l *Conn) finishMessage(MessageID uint64) {
 }
 
 func (l *Conn) reader() {
+	defer func() {
+		if r := recover() ; r != nil {
+			fmt.Printf("recovering message: %v\n", r)
+		}
+	}()
 	defer l.Close()
 	for {
 		p, err := ber.ReadPacket(l.conn)
