@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"net"
 	"sync"
+	"time"
 
 	"github.com/mmitton/asn1-ber"
 )
@@ -312,7 +313,10 @@ func (l *Conn) sendProcessMessage(message *messagePacket) {
 	if l.chanProcessMessage != nil {
 		go func() {
 			defer func() { recover()}()
-			l.chanProcessMessage <- message
+			select {
+				case l.chanProcessMessage <- message:
+				case <-time.After(10 * time.Second):
+			}
 		}()
 	}
 }
